@@ -16,13 +16,23 @@ app.post('/process-array', (req, res) => {
   const fileContents = dataArray.join('\n');
   fs.writeFile(filePath, fileContents, (err) => {
     if (err) {
+      console.error('Error writing to file:', err);
       res.status(500).send('Error writing to file');
     } else {
+      console.log('File saved:', filePath);
       res.download(filePath, 'output.txt', (err) => {
         if (err) {
+          console.error('Error sending file:', err);
           res.status(500).send('Error sending file');
         } else {
-          fs.unlink(filePath);
+          console.log('File sent to client');
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error('Error deleting file:', err);
+            } else {
+              console.log('File deleted:', filePath);
+            }
+          });
         }
       });
     }
